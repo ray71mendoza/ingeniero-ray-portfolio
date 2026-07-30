@@ -1,0 +1,19 @@
+{
+  "name": "Ingeniero RAY Portfolio",
+  "short_name": "RAY Dev",
+  "description": "Portafolio profesional de Ingeniero RAY - Senior Software Architect & Angular Expert",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090B10",
+  "theme_color": "#00F2FE",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["productivity", "business"],
+  "lang": "es"
+}

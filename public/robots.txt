@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Block unnecessary build artifacts
+Disallow: /dist/
+
+Sitemap: https://ingeniero-ray.vercel.app/sitemap.xml
