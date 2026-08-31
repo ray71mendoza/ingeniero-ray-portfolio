@@ -17,10 +17,11 @@ export class SeoService {
 
   private readonly siteUrl = 'https://ingeniero-ray.vercel.app';
   private readonly defaultImage = '/assets/images/profile.jpg';
-  private readonly twitterHandle = '@IngenieroRAY';
+  private readonly authorName = 'Ray Sebastián Mendoza Torres';
+  private readonly linkedinUrl = 'https://www.linkedin.com/in/raymendozatorres/';
 
   updateSeo(config: SeoConfig): void {
-    const fullTitle = `${config.title} | Ingeniero RAY - Software Architect`;
+    const fullTitle = `${config.title} | ${this.authorName} - Ingeniero de Sistemas`;
     const imageUrl = config.image ?? this.defaultImage;
     const pageUrl = config.url ?? this.siteUrl;
 
@@ -28,7 +29,7 @@ export class SeoService {
 
     this.meta.updateTag({ name: 'description', content: config.description });
     this.meta.updateTag({ name: 'keywords', content: config.keywords });
-    this.meta.updateTag({ name: 'author', content: 'Ingeniero RAY' });
+    this.meta.updateTag({ name: 'author', content: this.authorName });
     this.meta.updateTag({ name: 'robots', content: 'index, follow' });
 
     this.meta.updateTag({ property: 'og:title', content: fullTitle });
@@ -36,11 +37,10 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:image', content: imageUrl });
     this.meta.updateTag({ property: 'og:url', content: pageUrl });
     this.meta.updateTag({ property: 'og:type', content: config.type ?? 'website' });
-    this.meta.updateTag({ property: 'og:site_name', content: 'Portafolio Ingeniero RAY' });
+    this.meta.updateTag({ property: 'og:site_name', content: 'Portafolio Ray Mendoza' });
     this.meta.updateTag({ property: 'og:locale', content: 'es_CO' });
 
     this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
-    this.meta.updateTag({ name: 'twitter:site', content: this.twitterHandle });
     this.meta.updateTag({ name: 'twitter:title', content: fullTitle });
     this.meta.updateTag({ name: 'twitter:description', content: config.description });
     this.meta.updateTag({ name: 'twitter:image', content: imageUrl });
@@ -69,18 +69,18 @@ export class SeoService {
         {
           '@type': 'Person',
           '@id': `${this.siteUrl}/#person`,
-          name: 'Ingeniero RAY',
-          jobTitle: 'Senior Software Architect & Angular Expert',
-          description: 'Arquitecto de Software y Full Stack Engineer especializado en Angular 20+, TypeScript, microservicios y ciberseguridad.',
+          name: this.authorName,
+          jobTitle: 'Ingeniero de Sistemas · Desarrollador Sénior · Líder Técnico',
+          description: 'Ingeniero de Sistemas con experiencia en desarrollo sénior, liderazgo técnico y transformación digital.',
           url: this.siteUrl,
           image: `${this.siteUrl}/assets/images/profile.jpg`,
-          sameAs: ['https://github.com', 'https://linkedin.com'],
-          knowsAbout: ['Angular', 'TypeScript', 'Node.js', 'Python', 'AWS', 'Docker', 'Cybersecurity']
+          sameAs: ['https://github.com', this.linkedinUrl],
+          knowsAbout: ['Python', 'JavaScript', 'PHP', 'SQL', 'React', 'Node.js', 'APIs REST', 'Moodle', 'GLPI', 'Scrum', 'ISO 27001', 'Ciberseguridad']
         },
         {
           '@type': 'WebSite',
           '@id': `${this.siteUrl}/#website`,
-          name: 'Portafolio Ingeniero RAY',
+          name: 'Portafolio Ray Mendoza',
           url: this.siteUrl,
           author: { '@id': `${this.siteUrl}/#person` }
         }

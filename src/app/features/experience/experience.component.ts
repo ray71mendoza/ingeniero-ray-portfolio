@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Briefcase, Calendar, MapPin, CheckCircle2, TrendingUp } from 'lucide-angular';
+import { LucideAngularModule, Briefcase, Calendar, MapPin, CheckCircle2, TrendingUp, Award, Layers } from 'lucide-angular';
 import { GlassCardComponent } from '../../shared/components/glass-card/glass-card.component';
 import { ExperienceItem } from '../../models/portfolio.models';
+import { TranslationService } from '../../core/services/translation.service';
 
 @Component({
   selector: 'app-experience',
@@ -16,18 +17,18 @@ import { ExperienceItem } from '../../models/portfolio.models';
         <div class="text-center space-y-4 mb-20">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel border border-neon-cyan/30 text-xs font-mono text-neon-cyan">
             <lucide-icon [img]="BriefcaseIcon" class="w-3.5 h-3.5"></lucide-icon>
-            <span>Trayectoria Profesional</span>
+            <span>{{ ts.t().experience.badge }}</span>
           </div>
           <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight">
-            Línea del <span class="text-gradient-cyan">Tiempo</span>
+            {{ ts.t().experience.title }} <span class="text-gradient-cyan">{{ ts.t().experience.titleAccent }}</span>
           </h2>
           <p class="text-gray-400 max-w-2xl mx-auto text-sm sm:text-base">
-            Historial comprobado liderando desarrollo frontend, arquitecturas escalables y transformación digital.
+            {{ ts.t().experience.subtitle }}
           </p>
         </div>
 
         <!-- Vertical Timeline Grid -->
-        <div class="relative border-l-2 border-neon-cyan/30 ml-4 md:ml-32 space-y-12">
+        <div class="relative border-l-2 border-neon-cyan/30 ml-4 md:ml-36 space-y-12">
           
           @for (item of experiences; track item.id; let idx = $index) {
             <div class="relative pl-8 md:pl-12 group">
@@ -38,28 +39,30 @@ import { ExperienceItem } from '../../models/portfolio.models';
               </div>
 
               <!-- Time Badge on Left (Desktop) -->
-              <div class="hidden md:block absolute -left-36 top-1 text-right w-28 font-mono text-xs text-neon-cyan font-bold">
-                {{ item.period }}
+              <div class="hidden md:block absolute -left-40 top-1 text-right w-32 font-mono text-xs text-neon-cyan font-bold leading-tight">
+                {{ ts.currentLang() === 'es' ? item.periodEs : item.periodEn }}
               </div>
 
               <!-- Content Glass Card -->
               <app-glass-card className="space-y-4 border border-cyber-border-dark group-hover:border-neon-cyan/40 transition-all duration-300">
                 <div class="flex flex-wrap items-center justify-between gap-2 border-b border-cyber-border-dark pb-4">
                   <div>
-                    <h3 class="text-xl font-bold text-gray-100 flex items-center gap-2">
-                      {{ item.role }}
-                      <span class="text-xs px-2.5 py-0.5 rounded-full bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/30 font-mono">
+                    <!-- Mobile Time Badge -->
+                    <div class="md:hidden inline-block mb-1 px-2.5 py-0.5 rounded-full bg-neon-cyan/10 text-neon-cyan text-[11px] font-mono font-bold">
+                      {{ ts.currentLang() === 'es' ? item.periodEs : item.periodEn }}
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-100 flex flex-wrap items-center gap-2">
+                      {{ ts.currentLang() === 'es' ? item.roleEs : item.roleEn }}
+                      <span class="text-xs px-2.5 py-0.5 rounded-full bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/30 font-mono font-normal">
                         {{ item.company }}
                       </span>
                     </h3>
+                    
                     <div class="flex items-center gap-4 text-xs text-gray-400 mt-1 font-mono">
                       <span class="flex items-center gap-1">
-                        <lucide-icon [img]="CalendarIcon" class="w-3.5 h-3.5 text-neon-purple"></lucide-icon>
-                        {{ item.period }}
-                      </span>
-                      <span class="flex items-center gap-1">
                         <lucide-icon [img]="MapPinIcon" class="w-3.5 h-3.5 text-neon-cyan"></lucide-icon>
-                        {{ item.location }}
+                        {{ ts.currentLang() === 'es' ? item.locationEs : item.locationEn }}
                       </span>
                     </div>
                   </div>
@@ -67,32 +70,16 @@ import { ExperienceItem } from '../../models/portfolio.models';
 
                 <!-- Description List -->
                 <ul class="space-y-2 text-xs sm:text-sm text-gray-300">
-                  @for (desc of item.description; track desc) {
-                    <li class="flex items-start gap-2">
+                  @for (desc of (ts.currentLang() === 'es' ? item.descriptionEs : item.descriptionEn); track desc) {
+                    <li class="flex items-start gap-2.5">
                       <lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-neon-cyan shrink-0 mt-0.5"></lucide-icon>
-                      <span>{{ desc }}</span>
+                      <span class="leading-relaxed">{{ desc }}</span>
                     </li>
                   }
                 </ul>
 
-                <!-- Key Achievements -->
-                <div class="p-3.5 rounded-xl bg-cyber-dark/80 border border-cyber-border-dark space-y-2">
-                  <div class="flex items-center gap-2 text-xs font-mono text-neon-emerald font-bold uppercase tracking-wider">
-                    <lucide-icon [img]="TrendingIcon" class="w-3.5 h-3.5"></lucide-icon>
-                    Impacto & Logros Clave:
-                  </div>
-                  <ul class="space-y-1 text-xs text-gray-400">
-                    @for (ach of item.achievements; track ach) {
-                      <li class="flex items-center gap-2">
-                        <span class="w-1.5 h-1.5 rounded-full bg-neon-emerald"></span>
-                        <span>{{ ach }}</span>
-                      </li>
-                    }
-                  </ul>
-                </div>
-
                 <!-- Technologies Used Badges -->
-                <div class="flex flex-wrap gap-1.5 pt-2">
+                <div class="flex flex-wrap gap-1.5 pt-3 border-t border-cyber-border-dark/60">
                   @for (tech of item.technologies; track tech) {
                     <span class="px-2.5 py-1 rounded-md bg-cyber-dark border border-cyber-border-dark text-[11px] font-mono text-gray-300">
                       {{ tech }}
@@ -111,6 +98,8 @@ import { ExperienceItem } from '../../models/portfolio.models';
   `
 })
 export class ExperienceComponent {
+  ts = inject(TranslationService);
+
   readonly BriefcaseIcon = Briefcase;
   readonly CalendarIcon = Calendar;
   readonly MapPinIcon = MapPin;
@@ -119,54 +108,120 @@ export class ExperienceComponent {
 
   readonly experiences: ExperienceItem[] = [
     {
-      id: 'exp-1',
-      company: 'Tech Enterprise Solutions',
-      role: 'Principal Software Architect & Lead Angular',
-      period: '2023 - Presente',
-      location: 'Remoto / EE.UU.',
-      description: [
-        'Liderazgo técnico en la arquitectura de micro-frontends basados en Angular 20+ con Signals y RxJS.',
-        'Diseño e implementación de sistemas de diseño corporativo con Web Components y Tailwind CSS.',
-        'Migración masiva de código legado en AngularJS/Angular 12 a Angular Standalone Components.'
+      id: 'exp-mt-solutions',
+      company: 'MT Solutions',
+      roleEs: 'Desarrollador Sénior - Líder Técnico',
+      roleEn: 'Senior Developer - Technical Lead',
+      periodEs: 'Nov 2024 – Actualidad',
+      periodEn: 'Nov 2024 – Present',
+      locationEs: 'Colombia',
+      locationEn: 'Colombia',
+      descriptionEs: [
+        'Lideré un equipo de desarrollo de software con metodología ágil Scrum (Daily Scrum, sprint planning, revisiones, retrospectivas).',
+        'Diseñé, desarrollé e implementé aplicaciones web Full Stack (Front-end y Back-end), integrando interfaces, lógica de negocio, APIs y servicios.',
+        'Desarrollé, administré y personalicé plataformas Moodle (funcionalidades, entornos virtuales de aprendizaje, integraciones y automatizaciones).',
+        'Diseñé y administré bases de datos relacionales con SQL (consultas, procedimientos, optimización, mantenimiento).',
+        'Desarrollé con Python, PHP, JavaScript, HTML, CSS y control de versiones.',
+        'Implementé y consumí APIs REST para interoperabilidad entre plataformas.',
+        'Administré repositorios de código y procesos de integración/despliegue.',
+        'Brindé soporte técnico y funcional, mantenimiento correctivo/preventivo de plataformas e infraestructura.',
+        'Administré la mesa de ayuda GLPI (incidentes, requerimientos, inventario TI, SLA).',
+        'Elaboré documentación técnica, manuales y procedimientos.',
+        'Participé en proyectos de transformación digital.'
       ],
-      achievements: [
-        'Reducción del 45% en tiempo de carga inicial (Core Web Vitals LCP < 1.2s).',
-        'Cero vulnerabilidades críticas reportadas en auditorías OWASP de producción.',
-        'Mentoría a un equipo de 14 ingenieros frontend senior.'
+      descriptionEn: [
+        'Led a software engineering team using agile Scrum methodology (Daily Scrum, sprint planning, reviews, retrospectives).',
+        'Designed, developed, and implemented Full Stack web applications (Front-end and Back-end), integrating interfaces, business logic, APIs, and microservices.',
+        'Developed, administered, and customized Moodle platforms (custom features, virtual learning environments, integrations, and automation).',
+        'Designed and managed relational databases with SQL (complex queries, stored procedures, indexing, performance optimization).',
+        'Developed with Python, PHP, JavaScript, HTML, CSS, and Git version control.',
+        'Implemented and consumed REST APIs to enable cross-platform interoperability.',
+        'Managed code repositories, CI/CD pipelines, and deployment lifecycles.',
+        'Provided functional and technical IT support, preventive/corrective maintenance for enterprise platforms and infrastructure.',
+        'Administered the GLPI IT Service Desk (incidents, requests, IT asset inventory, SLA enforcement).',
+        'Authored in-depth technical documentation, developer manuals, and standard operating procedures.',
+        'Active participant in corporate digital transformation initiatives.'
       ],
-      technologies: ['Angular 20', 'Signals', 'RxJS', 'TypeScript', 'Tailwind CSS', 'AWS', 'Docker', 'Jest']
+      technologies: ['Scrum', 'Python', 'PHP', 'JavaScript', 'SQL', 'APIs REST', 'Moodle', 'GLPI', 'HTML/CSS', 'Git']
     },
     {
-      id: 'exp-2',
-      company: 'Global Banking Systems',
-      role: 'Senior Full Stack Engineer',
-      period: '2020 - 2023',
-      location: 'Híbrido',
-      description: [
-        'Desarrollo de plataforma transaccional bancaria de alta concurrencia.',
-        'Construcción de microservicios REST/GraphQL en Node.js, Express y Python FastAPI.',
-        'Integración de pasarelas de pago con seguridad PCI-DSS y cifrado AES-256.'
+      id: 'exp-tic-global',
+      company: 'TIC Global',
+      roleEs: 'Ingeniero de Sistemas Junior',
+      roleEn: 'Junior Systems Engineer',
+      periodEs: 'Ago 2025 – Dic 2025',
+      periodEn: 'Aug 2025 – Dec 2025',
+      locationEs: 'Colombia',
+      locationEn: 'Colombia',
+      descriptionEs: [
+        'Participé en el desarrollo y mantenimiento de software para los Servicios Ciudadanos Digitales (SCD), apoyando transformación digital de entidades públicas.',
+        'Desarrollé funcionalidades (codificación, depuración, pruebas unitarias).',
+        'Implementé e integré APIs REST y servicios web.',
+        'Elaboré documentación técnica, manuales de usuario, guías de instalación y reportes de pruebas.',
+        'Participé en reuniones ágiles de seguimiento técnico y de proyecto.',
+        'Apoyé la masificación de los SCD en entidades públicas nacionales y territoriales.',
+        'Apliqué buenas prácticas de desarrollo seguro y accesible según la Agencia Nacional de Gobierno Digital.'
       ],
-      achievements: [
-        'Procesamiento seguro de más de 2M de transacciones diarias sin interrupciones.',
-        'Implementación de pipelines CI/CD automatizados reduciendo deploys de 3h a 12 minutos.'
+      descriptionEn: [
+        'Contributed to the development and maintenance of software for Digital Citizen Services (SCD), supporting digital transformation in public sector entities.',
+        'Engineered new application features (coding, debugging, unit testing).',
+        'Implemented and integrated RESTful APIs and web services.',
+        'Authored technical documentation, user manuals, deployment guides, and test reports.',
+        'Participated in agile technical tracking and project coordination meetings.',
+        'Supported the nationwide rollout and adoption of SCD across national and regional public organizations.',
+        'Applied secure and accessible software development standards in compliance with the National Digital Government Agency guidelines.'
       ],
-      technologies: ['Angular 14-16', 'Node.js', 'FastAPI', 'PostgreSQL', 'Redis', 'Docker', 'OAuth2/JWT']
+      technologies: ['Servicios Ciudadanos Digitales', 'APIs REST', 'Desarrollo Seguro', 'Testing', 'Documentación Técnica', 'Gobierno Digital']
     },
     {
-      id: 'exp-3',
-      company: 'Innovation Digital Agency',
-      role: 'Frontend Engineer Lead',
-      period: '2017 - 2020',
-      location: 'Presencial',
-      description: [
-        'Creación de plataformas e-commerce, paneles administrativos y aplicaciones progresivas (PWA).',
-        'Optimización SEO avanzada, implementación de SSR con Angular Universal y Web Vitals.'
+      id: 'exp-indra',
+      company: 'INDRA',
+      roleEs: 'SOC - Ingeniero de Sistemas Junior',
+      roleEn: 'SOC - Junior Systems Engineer',
+      periodEs: 'May 2024 – Nov 2024',
+      periodEn: 'May 2024 – Nov 2024',
+      locationEs: 'Colombia',
+      locationEn: 'Colombia',
+      descriptionEs: [
+        'Desarrollé herramientas de automatización en Python para extracción, procesamiento y análisis de datos.',
+        'Automaticé configuraciones de infraestructura de red en dispositivos Cisco mediante scripting.',
+        'Diseñé e implementé herramientas con interfaces gráficas.',
+        'Elaboré 46 guías técnicas en Excel para la gestión de 21 sistemas.',
+        'Realicé seguimiento técnico y comunicación de avances con stakeholders.',
+        'Fortalecí conocimientos en ciberseguridad (ISO 27001, NIST, Ethical Hacking, Pentesting).'
       ],
-      achievements: [
-        'Incremento del 35% en conversión de usuarios gracias a mejoras de UI/UX y velocidad.'
+      descriptionEn: [
+        'Developed Python automation tools for high-volume data extraction, processing, and analytics.',
+        'Automated network infrastructure provisioning and configuration on Cisco devices via scripting.',
+        'Designed and implemented GUI-based automation utilities for internal operations.',
+        'Authored 46 comprehensive technical Excel management guides covering 21 critical systems.',
+        'Conducted technical tracking and communicated project milestones with senior stakeholders.',
+        'Strengthened cybersecurity knowledge (ISO 27001, NIST framework, Ethical Hacking, and Pentesting).'
       ],
-      technologies: ['Angular', 'SCSS', 'Bootstrap', 'WordPress API', 'Firebase', 'GSAP']
+      technologies: ['Python Automation', 'Cisco Network Scripting', 'ISO 27001', 'NIST', 'Ethical Hacking', 'SOC']
+    },
+    {
+      id: 'exp-saintz',
+      company: 'Corporación de Ingeniería Saintz S.A.S',
+      roleEs: 'Ingeniero de Sistemas Junior',
+      roleEn: 'Junior Systems Engineer',
+      periodEs: 'Sep 2022 – Abr 2024',
+      periodEn: 'Sep 2022 – Apr 2024',
+      locationEs: 'Colombia',
+      locationEn: 'Colombia',
+      descriptionEs: [
+        'Brindé soporte técnico (hardware/software, instalación de SO y aplicaciones, remoto y presencial).',
+        'Capacité a usuarios en buenas prácticas tecnológicas.',
+        'Participé en desarrollo y mantenimiento de aplicaciones con JavaScript y Python, pruebas de software, documentación técnica y control de versiones (Git/GitHub).',
+        'Contribuí en manuales de usuario y desarrollador.'
+      ],
+      descriptionEn: [
+        'Delivered comprehensive technical support (hardware/software troubleshooting, OS deployment, and application installation, both remotely and on-site).',
+        'Trained end-users on technology best practices and system usage.',
+        'Participated in software development and maintenance using JavaScript and Python, software testing, technical documentation, and version control (Git/GitHub).',
+        'Contributed to user and developer documentation manuals.'
+      ],
+      technologies: ['JavaScript', 'Python', 'Git/GitHub', 'Soporte TI', 'Hardware/Software', 'Capacitación']
     }
   ];
 }

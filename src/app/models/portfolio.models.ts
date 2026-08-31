@@ -1,9 +1,11 @@
 export interface Project {
   id: string;
   title: string;
-  category: 'Fullstack' | 'Frontend' | 'Backend' | 'Architecture' | 'AI & Cloud';
-  description: string;
-  longDescription?: string;
+  category: 'Fullstack' | 'Frontend' | 'Backend' | 'Architecture' | 'FinTech' | 'Enterprise';
+  descriptionEs: string;
+  descriptionEn: string;
+  longDescriptionEs?: string;
+  longDescriptionEn?: string;
   technologies: string[];
   imageUrl: string;
   videoUrl?: string;
@@ -11,37 +13,49 @@ export interface Project {
   demoUrl?: string;
   docsUrl?: string;
   featured: boolean;
-  metrics?: { label: string; value: string }[];
+  metrics?: { labelEs: string; labelEn: string; value: string }[];
 }
 
 export interface ExperienceItem {
   id: string;
   company: string;
-  role: string;
-  period: string;
-  location: string;
-  description: string[];
+  roleEs: string;
+  roleEn: string;
+  periodEs: string;
+  periodEn: string;
+  locationEs: string;
+  locationEn: string;
+  descriptionEs: string[];
+  descriptionEn: string[];
   technologies: string[];
-  achievements: string[];
+  achievementsEs?: string[];
+  achievementsEn?: string[];
   companyLogo?: string;
 }
 
 export interface TechSkill {
   name: string;
-  category: 'Frontend' | 'Backend' | 'Databases' | 'DevOps' | 'CMS' | 'Testing' | 'Tools' | 'Cybersecurity' | 'AI';
+  categoryEs: string;
+  categoryEn: string;
+  categoryKey: 'programming' | 'web' | 'databases' | 'automation' | 'tools' | 'systems' | 'cybersecurity' | 'support' | 'methodologies' | 'platforms' | 'languages';
   level: number; // 0 to 100
   icon: string;
   color: string;
-  description: string;
+  descriptionEs: string;
+  descriptionEn: string;
 }
 
 export interface ServiceOffering {
   id: string;
-  title: string;
-  subtitle: string;
-  description: string;
+  titleEs: string;
+  titleEn: string;
+  subtitleEs: string;
+  subtitleEn: string;
+  descriptionEs: string;
+  descriptionEn: string;
   icon: string;
-  features: string[];
+  featuresEs: string[];
+  featuresEn: string[];
   badge?: string;
 }
 
@@ -50,10 +64,12 @@ export interface CertificationItem {
   title: string;
   institution: string;
   issueDate: string;
+  hours?: number;
+  score?: number;
   expiryDate?: string;
   credentialUrl?: string;
   pdfUrl?: string;
-  imageUrl: string;
+  imageUrl?: string;
   skills: string[];
 }
 
