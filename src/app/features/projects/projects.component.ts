@@ -1,7 +1,7 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, FolderGit2, Search, ExternalLink, Github, Eye, X, Sparkles, Layers, CheckCircle2, Shield } from 'lucide-angular';
+import { LucideAngularModule, FolderGit2, Search, ExternalLink, Github, Eye, X, Sparkles, Layers, CheckCircle2, Shield, Maximize2, Monitor } from 'lucide-angular';
 import { GlassCardComponent } from '../../shared/components/glass-card/glass-card.component';
 import { TiltDirective } from '../../shared/directives/tilt.directive';
 import { Project } from '../../models/portfolio.models';
@@ -67,38 +67,36 @@ import { TranslationService } from '../../core/services/translation.service';
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           @for (proj of filteredProjects(); track proj.id) {
             
-            <div appTilt [maxTilt]="8" class="h-full">
-              <app-glass-card className="h-full flex flex-col justify-between space-y-4 group border border-cyber-border-dark hover:border-neon-cyan/50 transition-all duration-300">
+            <div appTilt [maxTilt]="8" class="h-full cursor-pointer" (click)="openProjectModal(proj)">
+              <app-glass-card className="h-full flex flex-col justify-between space-y-4 group border border-cyber-border-dark hover:border-neon-cyan/50 transition-all duration-300 bg-cyber-dark/85">
                 
                 <!-- Project Image Preview -->
-                <div class="relative h-48 rounded-xl overflow-hidden bg-cyber-dark border border-cyber-border-dark/60">
+                <div class="relative h-52 rounded-xl overflow-hidden bg-cyber-dark border border-cyber-border-dark/60 group/img">
                   <img 
                     [src]="proj.imageUrl" 
                     [alt]="proj.title" 
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    class="w-full h-full object-cover object-top group-hover/img:scale-105 transition-transform duration-500" />
                   
-                  <div class="absolute inset-0 bg-gradient-to-t from-cyber-dark via-transparent to-transparent opacity-80"></div>
+                  <div class="absolute inset-0 bg-gradient-to-t from-cyber-dark via-transparent to-transparent opacity-70"></div>
                   
                   <!-- Category Tag -->
-                  <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-cyber-dark/90 backdrop-blur-md border border-neon-cyan/30 text-[10px] font-mono text-neon-cyan">
+                  <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-cyber-dark/90 backdrop-blur-md border border-neon-cyan/30 text-[10px] font-mono text-neon-cyan shadow-md">
                     {{ proj.category }}
                   </div>
 
-                  <!-- Hover Action Buttons -->
-                  <div class="absolute inset-0 bg-cyber-dark/70 backdrop-blur-sm opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-300">
-                    <button 
-                      (click)="openProjectModal(proj)" 
-                      class="px-4 py-2 rounded-xl bg-neon-cyan text-gray-950 text-xs font-bold flex items-center gap-1.5 hover:scale-105 transition-transform shadow-lg">
+                  <!-- Hover Action Overlay -->
+                  <div class="absolute inset-0 bg-cyber-dark/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-300">
+                    <span class="px-4 py-2 rounded-xl bg-neon-cyan text-gray-950 text-xs font-extrabold flex items-center gap-1.5 shadow-lg transform group-hover:scale-105 transition-transform">
                       <lucide-icon [img]="EyeIcon" class="w-4 h-4"></lucide-icon>
                       <span>{{ ts.t().projects.btnViewDetails }}</span>
-                    </button>
+                    </span>
                   </div>
                 </div>
 
                 <!-- Content Info -->
                 <div class="space-y-3 flex-1">
-                  <h3 class="text-xl font-bold text-gray-100 group-hover:text-neon-cyan transition-colors">
-                    {{ proj.title }}
+                  <h3 class="text-xl font-bold text-gray-100 group-hover:text-neon-cyan transition-colors flex items-center justify-between">
+                    <span>{{ proj.title }}</span>
                   </h3>
                   <p class="text-xs text-gray-300 leading-relaxed line-clamp-3">
                     {{ ts.currentLang() === 'es' ? proj.descriptionEs : proj.descriptionEn }}
@@ -114,21 +112,17 @@ import { TranslationService } from '../../core/services/translation.service';
                   }
                 </div>
 
-                <!-- Footer Links -->
+                <!-- Footer Action Bar -->
                 <div class="pt-4 border-t border-cyber-border-dark flex items-center justify-between">
-                  <button 
-                    (click)="openProjectModal(proj)" 
-                    class="text-xs font-mono text-neon-cyan hover:underline flex items-center gap-1.5">
+                  <span class="text-xs font-mono text-neon-cyan group-hover:underline flex items-center gap-1.5 font-semibold">
                     <lucide-icon [img]="EyeIcon" class="w-3.5 h-3.5"></lucide-icon>
                     <span>{{ ts.t().projects.btnViewDetails }}</span>
-                  </button>
+                  </span>
 
-                  @if (proj.demoUrl) {
-                    <a [href]="proj.demoUrl" target="_blank" class="text-xs font-mono text-gray-400 hover:text-neon-cyan flex items-center gap-1">
-                      <span>{{ ts.t().projects.btnLiveDemo }}</span>
-                      <lucide-icon [img]="ExternalIcon" class="w-3 h-3"></lucide-icon>
-                    </a>
-                  }
+                  <span class="text-[11px] font-mono text-gray-400 flex items-center gap-1">
+                    <lucide-icon [img]="MonitorIcon" class="w-3.5 h-3.5 text-neon-purple"></lucide-icon>
+                    <span>UI Preview</span>
+                  </span>
                 </div>
 
               </app-glass-card>
@@ -137,36 +131,72 @@ import { TranslationService } from '../../core/services/translation.service';
           }
         </div>
 
-        <!-- Project Detail Modal -->
+        <!-- Project Detail Modal (Shows Full Interface Screenshot) -->
         @if (selectedModalProject()) {
-          <div class="fixed inset-0 z-50 bg-cyber-dark/80 backdrop-blur-md flex items-center justify-center p-4">
-            <div class="max-w-2xl w-full glass-panel border border-neon-cyan/40 p-6 sm:p-8 rounded-3xl space-y-6 animate-in fade-in zoom-in duration-300 relative max-h-[90vh] overflow-y-auto bg-cyber-dark/95">
+          <div class="fixed inset-0 z-50 bg-cyber-dark/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6" (click)="selectedModalProject.set(null)">
+            <div 
+              class="max-w-4xl w-full glass-panel border border-neon-cyan/40 p-6 sm:p-8 rounded-3xl space-y-6 animate-in fade-in zoom-in duration-300 relative max-h-[92vh] overflow-y-auto bg-cyber-dark/95 shadow-2xl" 
+              (click)="$event.stopPropagation()">
               
-              <button (click)="selectedModalProject.set(null)" class="absolute top-4 right-4 w-8 h-8 rounded-full glass-panel flex items-center justify-center text-gray-400 hover:text-neon-cyan">
+              <!-- Close Button -->
+              <button 
+                (click)="selectedModalProject.set(null)" 
+                class="absolute top-4 right-4 w-9 h-9 rounded-full glass-panel flex items-center justify-center text-gray-400 hover:text-neon-cyan hover:border-neon-cyan/50 transition-all z-10">
                 <lucide-icon [img]="XIcon" class="w-5 h-5"></lucide-icon>
               </button>
 
-              <div class="space-y-2">
-                <span class="px-3 py-1 rounded-full text-xs font-mono bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/30">
-                  {{ selectedModalProject()?.category }}
-                </span>
-                <h3 class="text-2xl sm:text-3xl font-extrabold text-gray-100">
+              <!-- Modal Header -->
+              <div class="space-y-2 pr-10">
+                <div class="flex items-center gap-2">
+                  <span class="px-3 py-1 rounded-full text-xs font-mono bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/30">
+                    {{ selectedModalProject()?.category }}
+                  </span>
+                  <span class="px-3 py-1 rounded-full text-xs font-mono bg-neon-purple/10 text-neon-purple border border-neon-purple/30 flex items-center gap-1">
+                    <lucide-icon [img]="MonitorIcon" class="w-3 h-3"></lucide-icon>
+                    {{ ts.currentLang() === 'es' ? 'Interfaz Oficial del Proyecto' : 'Official Project UI' }}
+                  </span>
+                </div>
+                <h3 class="text-2xl sm:text-4xl font-extrabold text-gray-100">
                   {{ selectedModalProject()?.title }}
                 </h3>
               </div>
 
-              <div class="rounded-2xl overflow-hidden border border-cyber-border-dark max-h-64">
+              <!-- Full Project Interface Frame -->
+              <div class="rounded-2xl overflow-hidden border-2 border-cyber-border-dark group relative bg-cyber-dark shadow-2xl">
+                <!-- Browser Mockup Bar -->
+                <div class="bg-cyber-dark/90 px-4 py-2 border-b border-cyber-border-dark flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
+                    <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
+                    <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+                  </div>
+                  <span class="text-[11px] font-mono text-gray-400 truncate max-w-xs">
+                    {{ selectedModalProject()?.title }} — Preview
+                  </span>
+                  <a 
+                    [href]="selectedModalProject()?.imageUrl" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    title="Ver imagen en tamaño completo"
+                    class="text-xs font-mono text-neon-cyan hover:underline flex items-center gap-1">
+                    <lucide-icon [img]="MaximizeIcon" class="w-3.5 h-3.5"></lucide-icon>
+                    <span class="hidden sm:inline">{{ ts.currentLang() === 'es' ? 'Ampliar' : 'Enlarge' }}</span>
+                  </a>
+                </div>
+
+                <!-- High-Res Interface Image -->
                 <img 
                   [src]="selectedModalProject()?.imageUrl" 
                   [alt]="selectedModalProject()?.title" 
-                  class="w-full h-full object-cover" />
+                  class="w-full max-h-[500px] object-contain object-top bg-black/40" />
               </div>
 
+              <!-- Project Detailed Description -->
               <div class="space-y-2">
                 <h4 class="text-xs font-mono uppercase text-neon-cyan tracking-wider font-bold">
-                  {{ ts.currentLang() === 'es' ? 'Descripción Arquitectónica' : 'Architectural Description' }}
+                  {{ ts.currentLang() === 'es' ? 'Descripción Arquitectónica & Funcional' : 'Architectural & Functional Description' }}
                 </h4>
-                <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                <p class="text-sm sm:text-base text-gray-300 leading-relaxed whitespace-pre-line text-justify">
                   {{ ts.currentLang() === 'es' 
                     ? (selectedModalProject()?.longDescriptionEs || selectedModalProject()?.descriptionEs)
                     : (selectedModalProject()?.longDescriptionEn || selectedModalProject()?.descriptionEn) }}
@@ -178,9 +208,9 @@ import { TranslationService } from '../../core/services/translation.service';
                 <h4 class="text-xs font-mono uppercase text-gray-400 font-bold">
                   {{ ts.t().projects.techLabel }}
                 </h4>
-                <div class="flex flex-wrap gap-1.5">
+                <div class="flex flex-wrap gap-2">
                   @for (tech of selectedModalProject()?.technologies; track tech) {
-                    <span class="px-2.5 py-1 rounded-lg bg-cyber-dark border border-cyber-border-dark text-xs font-mono text-neon-cyan">
+                    <span class="px-3 py-1 rounded-lg bg-cyber-dark border border-cyber-border-dark text-xs font-mono text-neon-cyan">
                       {{ tech }}
                     </span>
                   }
@@ -191,7 +221,7 @@ import { TranslationService } from '../../core/services/translation.service';
               @if (selectedModalProject()?.metrics) {
                 <div class="grid grid-cols-2 gap-3 pt-2">
                   @for (metric of selectedModalProject()?.metrics; track metric.value) {
-                    <div class="p-3 rounded-xl bg-cyber-dark border border-cyber-border-dark">
+                    <div class="p-3.5 rounded-xl bg-cyber-dark border border-cyber-border-dark">
                       <div class="text-lg font-bold text-neon-cyan font-mono">{{ metric.value }}</div>
                       <div class="text-[11px] text-gray-400 font-mono uppercase">
                         {{ ts.currentLang() === 'es' ? metric.labelEs : metric.labelEn }}
@@ -201,8 +231,20 @@ import { TranslationService } from '../../core/services/translation.service';
                 </div>
               }
 
-              <div class="flex items-center gap-4 pt-4 border-t border-cyber-border-dark">
-                <button (click)="selectedModalProject.set(null)" class="px-5 py-2.5 rounded-xl bg-cyber-dark border border-cyber-border-dark text-xs font-bold text-gray-300 hover:text-white">
+              <!-- Action Buttons -->
+              <div class="flex items-center justify-between pt-4 border-t border-cyber-border-dark">
+                <a 
+                  [href]="selectedModalProject()?.imageUrl" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  class="px-5 py-2.5 rounded-xl glass-panel border border-neon-cyan/40 text-neon-cyan text-xs font-bold flex items-center gap-2 hover:scale-105 transition-transform">
+                  <lucide-icon [img]="MaximizeIcon" class="w-4 h-4"></lucide-icon>
+                  <span>{{ ts.currentLang() === 'es' ? 'Abrir Imagen Completa' : 'Open Full Image' }}</span>
+                </a>
+
+                <button 
+                  (click)="selectedModalProject.set(null)" 
+                  class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-purple text-gray-950 text-xs font-extrabold shadow-md hover:scale-105 transition-transform">
                   {{ ts.currentLang() === 'es' ? 'Cerrar' : 'Close' }}
                 </button>
               </div>
@@ -224,6 +266,8 @@ export class ProjectsComponent {
   readonly GithubIcon = Github;
   readonly EyeIcon = Eye;
   readonly XIcon = X;
+  readonly MaximizeIcon = Maximize2;
+  readonly MonitorIcon = Monitor;
 
   selectedCategoryId = signal<string>('all');
   searchQuery = signal<string>('');
@@ -251,7 +295,7 @@ export class ProjectsComponent {
       longDescriptionEs: 'Plataforma SaaS empresarial completa para automatización de ventas, emisión de propuestas comerciales, control de cotizaciones, chat operativo en tiempo real mediante WebSockets/Pusher y analítica interactiva de conversión con Chart.js.',
       longDescriptionEn: 'Full-featured enterprise SaaS CRM designed for sales automation, commercial proposal generation, real-time chat powered by WebSockets/Pusher, and conversion pipeline analytics with Chart.js.',
       technologies: ['React 18', 'Vite 5', 'Node.js', 'Express', 'PostgreSQL', 'Socket.io', 'Tailwind CSS', 'Chart.js', 'JWT', 'Zod'],
-      imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop',
+      imageUrl: 'assets/images/projects/vertex-crm-pro.jpeg',
       githubUrl: 'https://github.com',
       featured: true,
       metrics: [
@@ -268,7 +312,7 @@ export class ProjectsComponent {
       longDescriptionEs: 'Herramienta integral para gestión de sprints, tableros Kanban interactivos, backlog grooming, estimaciones de historias de usuario y seguimiento de velocidad de equipo con animaciones fluidas en Framer Motion y Tailwind CSS.',
       longDescriptionEn: 'Comprehensive agile workspace featuring interactive Kanban boards, sprint lifecycle management, backlog grooming, user story estimation, and team velocity metrics built with React, TypeScript, and Framer Motion.',
       technologies: ['React 18', 'TypeScript', 'Vite', 'Tailwind CSS', 'Framer Motion', 'Lucide React'],
-      imageUrl: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop',
+      imageUrl: 'assets/images/projects/vertex-sprint.jpeg',
       githubUrl: 'https://github.com',
       featured: true,
       metrics: [
@@ -285,7 +329,7 @@ export class ProjectsComponent {
       longDescriptionEs: 'Solución corporativa de archivo electrónico y gestión documental con arquitectura de microservicios en Turborepo, backend en NestJS 11, persistencia relacional PostgreSQL, control de versiones de documentos y cumplimiento de estándares de seguridad y retención.',
       longDescriptionEn: 'Corporate electronic document management and archiving system powered by NestJS 11, Turborepo monorepo architecture, Docker containerization, PostgreSQL persistence, and strict compliance and retention controls.',
       technologies: ['TypeScript', 'NestJS 11', 'Turborepo', 'Docker', 'PostgreSQL', 'REST APIs'],
-      imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop',
+      imageUrl: 'assets/images/projects/vertex-nexo.jpeg',
       githubUrl: 'https://github.com',
       featured: true,
       metrics: [
@@ -302,7 +346,7 @@ export class ProjectsComponent {
       longDescriptionEs: 'Hub centralizado de aplicaciones empresariales modular con Single Sign-On (SSO), autenticación centralizada JWT, control de roles de usuario (RBAC), registro de auditoría y micro-frontends integrados para el ecosistema de productos Vertex.',
       longDescriptionEn: 'Centralized corporate application hub featuring Single Sign-On (SSO), centralized JWT authentication, Role-Based Access Control (RBAC), comprehensive audit trails, and modular enterprise SaaS integration.',
       technologies: ['React 18', 'Node.js 18+', 'Express', 'PostgreSQL 15+', 'Tailwind CSS', 'Vite', 'JWT'],
-      imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop',
+      imageUrl: 'assets/images/projects/vertex-enterprise-suite.jpeg',
       githubUrl: 'https://github.com',
       featured: true,
       metrics: [
@@ -319,7 +363,7 @@ export class ProjectsComponent {
       longDescriptionEs: 'Prototipo ejecutable de nivel empresarial para gestión financiera, contabilidad de partida doble con PUC colombiano, conciliación bancaria, generación de balances financieros e integración electrónica de facturas con validación de XML/DIAN UBL 2.1.',
       longDescriptionEn: 'Production-grade financial engine for SMBs featuring double-entry bookkeeping, Colombian accounting standards (PUC), bank reconciliation, balance sheet generation, and simulated DIAN UBL 2.1 electronic invoice processing.',
       technologies: ['Spring Boot 3.3', 'Java 21', 'React 18', 'TypeScript', 'PostgreSQL 16', 'Flyway', 'Docker', 'Swagger UI'],
-      imageUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=800&auto=format&fit=crop',
+      imageUrl: 'assets/images/projects/suite-financiera-vertex.jpeg',
       githubUrl: 'https://github.com',
       featured: true,
       metrics: [
@@ -336,7 +380,7 @@ export class ProjectsComponent {
       longDescriptionEs: 'Sistema integral gastronómico para restaurantes y dark kitchens. Incluye Point of Sale (POS) con facturación, Kitchen Management (KDS) en tiempo real con temporizadores de urgencia, portal de meseros, menú digital interactivo con tokens QR y módulo de predicción de demanda mediante algoritmos de Machine Learning (Weka).',
       longDescriptionEn: 'Full-scale restaurant management ecosystem featuring POS billing, real-time Kitchen Display System (KDS) with urgency timers, waiter ordering portal, digital QR menu, and demand forecasting powered by Machine Learning (Weka).',
       technologies: ['React', 'Java / Spring Boot', 'Maven', 'Recharts', 'Docker', 'QR Code', 'Weka ML'],
-      imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800&auto=format&fit=crop',
+      imageUrl: 'assets/images/projects/food-core.jpeg',
       githubUrl: 'https://github.com',
       featured: true,
       metrics: [
@@ -353,7 +397,7 @@ export class ProjectsComponent {
       longDescriptionEs: 'Aplicación web full-stack integral diseñada para clínicas veterinarias, adopción y cuidado de mascotas. Provee interfaces diferenciadas y seguras para propietarios de mascotas, médicos veterinarios y administradores, con gestión de citas médicas, historial clínico y tienda online.',
       longDescriptionEn: 'End-to-end full-stack web platform for veterinary clinics and pet care. Provides dedicated role-based portals for pet owners, veterinary doctors, and administrators with clinical history management, appointment booking, adoption, and e-commerce.',
       technologies: ['React 19', 'Node.js', 'Express', 'MongoDB', 'Tailwind CSS 4', 'REST APIs'],
-      imageUrl: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=800&auto=format&fit=crop',
+      imageUrl: 'assets/images/projects/pet-care.jpeg',
       githubUrl: 'https://github.com',
       featured: true,
       metrics: [
